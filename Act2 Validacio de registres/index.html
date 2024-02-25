@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulari de Registre</title>
+    <style>
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+<form name="myForm" action="/action_page.php" onsubmit="return validarFormulari()" method="post">
+    <label for="nomUsuari">Nom d'usuari:</label>
+    <input type="text" id="nomUsuari" name="nomUsuari" onfocusout="validarCamp(this)">
+    <span id="errorNomUsuari" class="error"></span>
+    <br>
+
+    <label for="email">Correu electrònic:</label>
+    <input type="text" id="email" name="email" onfocusout="validarEmail(this)">
+    <span id="errorEmail" class="error"></span>
+    <br>
+
+    <label for="contrasenya">Contrasenya:</label>
+    <input type="password" id="contrasenya" name="contrasenya" oninput="validarContrasenya(this)">
+    <span id="errorContrasenya" class="error"></span>
+    <br>
+
+    <label for="confirmarContrasenya">Confirmar contrasenya:</label>
+    <input type="password" id="confirmarContrasenya" name="confirmarContrasenya" onfocusout="validarConfirmarContrasenya(this)">
+    <span id="errorConfirmarContrasenya" class="error"></span>
+    <br>
+
+    <label for="adreca">Adreça postal:</label>
+    <input type="text" id="adreca" name="adreca" onfocusout="validarCamp(this)">
+    <span id="errorAdreca" class="error"></span>
+    <br>
+
+    <input type="submit" value="Registrar">
+</form>
+
+<script src="script.js"></script>
+
+</body>
+</html>
