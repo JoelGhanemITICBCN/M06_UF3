@@ -1,35 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-
-<body>
-
-    <?php
-    $servername = "localhost";
-    $dbname = "fetchselects";
-    $username = "root";
-    $password = "";
-    $conexion = mysqli_connect($servername, $username, $password, $dbname);
-    if (mysqli_ping($conexion)) {
-        $select = "select * from categorias";
-        $consulta = mysqli_query($conexion, $select);
+<?php
+$servername = "localhost";
+$dbname = "fetchselects";
+$username = "root";
+$password = "";
+$conexion = mysqli_connect($servername, $username, $password, $dbname);
+if ($conexion->connect_error) {
+    die("Ha fallado la conexion" + $conexion->connect_error);
+}
+    $select = "select * from categorias";
+    $consulta = mysqli_query($conexion, $select);
+    $object = new stdClass();
+    $resultado = array();
+    while ($categoria = $consulta->fetch_assoc()) {
         $object = new stdClass();
-        $resultado = array();
-        while ($categoria = $consulta->fetch_assoc()) {
-            $object = new stdClass();
-            $object->id = $categoria["id"];
-            $object->nom = $categoria["nom"];
-            array_push($resultado, $object);
-        }
-        echo json_encode($resultado);
-        mysqli_close($conexion);
+        $object->id = $categoria["id"];
+        $object->nom = $categoria["nom"];
+        array_push($resultado, $object);
     }
-    ?>
-</body>
-
-</html>
+    echo json_encode($resultado);
+    mysqli_close($conexion);
+?>

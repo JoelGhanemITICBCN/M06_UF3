@@ -1,70 +1,67 @@
-// Función para cargar categorías
-function cargarCategorias() {
-    // Configurar opciones para la petición fetch
-    let options = {
-        method: 'GET'
-    };
+// Obtener referencias a los elementos de categoría y subcategoría en el DOM
+const categoriaSeleccionada = document.getElementById('categoria');
+const subcategoriaSeleccionada = document.getElementById('subcategoria');
 
-    // Realizar la llamada al servicio PHP para obtener las categorías
-    fetch("getCats.php", options)
-        .then((response) => response.json())
-        .then((data) => {
-            // Limpiar el selector de categorías
-            var categoriaSelector = document.getElementById("categoria");
-            categoriaSelector.innerHTML = "<option value=''>Selecciona una categoría</option>";
+// Rutas de los archivos PHP para obtener categorías y subcategorías
+const obtenerCategoriasURL = 'getCats.php';
+const obtenerSubcategoriasURL = 'getSubCats.php';
 
-            // Llenar el selector de categorías con las obtenidas del servicio
-            data.forEach(categoria => {
-                var opt = document.createElement('option');
-                opt.value = categoria.id;
-                opt.innerHTML = categoria.nom;
-                categoriaSelector.appendChild(opt);
-            });
-        })
-        .catch((error) => {
-            console.log("F", error);
-            //console.log('Error:', error);
+// Obtener y mostrar las categorías al cargar la página
+fetch(obtenerCategoriasURL)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Error en getCats. ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Crear opciones de categoría y agregarlas al elemento de categoría
+        data.forEach(categoria => {
+            const optionCategoria = document.createElement('option');
+            optionCategoria.value = categoria.id;
+            optionCategoria.text = categoria.nombre;
+            categoriaSeleccionada.appendChild(optionCategoria);
         });
-}
+        // Desencadenar el evento 'change' en la categoría para cargar las subcategorías
+        categoriaSeleccionada.dispatchEvent(new Event('change'));
+    })
+    .catch(error => {
+        console.error('Error en la solicitud fetch para getCats:', error);
+    });
 
-// Función para cargar subcategorías
-function cargarSubcategorias() {
-    // Recoger el valor seleccionado del primer selector (categoría)
-    let idCategoria = document.getElementById("categoria").value;
-    
-    // Crear un objeto FormData con el id de la categoría seleccionada
+// Manejar el cambio en la selección de categoría
+categoriaSeleccionada.addEventListener("change", function() {
+    // Crear datos del formulario para enviar la categoría seleccionada
     let formData = new FormData();
-    formData.append("idCategoria", idCategoria);
+    formData.append('cat', categoriaSeleccionada.value);
 
-    // Configurar opciones para la petición fetch
-    let options = {
+    // Configurar las opciones para la solicitud fetch de subcategorías
+    let opciones = {
         method: 'POST',
         body: formData
     };
 
-    // Realizar la llamada al servicio PHP para obtener las subcategorías
-    fetch("getSubCats.php", options)
-        .then((response) => response.json())
+    // Obtener y mostrar las subcategorías correspondientes a la categoría seleccionada
+    fetch(obtenerSubcategoriasURL, opciones)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error en getSubCats. ${response.status}`);
+            }
+            return response.json();
+        })
         .then((data) => {
-            // Limpiar el selector de subcategorías
-            var subcategoriaSelector = document.getElementById("subcategoria");
-            subcategoriaSelector.innerHTML = "<option value=''>Selecciona una subcategoría</option>";
-
-            // Llenar el selector de subcategorías con las obtenidas del servicio
+            // Limpiar las opciones anteriores de subcategoría
+            subcategoriaSeleccionada.innerHTML = "";
+            
+            // Crear opciones de subcategoría y agregarlas al elemento de subcategoría
             data.forEach(subcategoria => {
-                var opt = document.createElement('option');
-                opt.value = subcategoria.id;
-                opt.text = subcategoria.nom;
-                subcategoriaSelector.appendChild(opt);
+                let optionSubcategoria = document.createElement("option"); 
+                optionSubcategoria.value = subcategoria.id;
+                optionSubcategoria.text = subcategoria.nombre; 
+                subcategoriaSeleccionada.appendChild(optionSubcategoria); 
             });
         })
-        .catch((error) => {
-            console.error('Error:', error);
+        .catch(error => {
+            console.error('Error en la solicitud fetch para getSubCats:', error);
         });
-}
-
-// Asociar la función cargarCategorias al cargar la página
-document.addEventListener("DOMContentLoaded", cargarCategorias);
-
-// Asociar la función cargarSubcategorias al evento de cambio del primer selector (categoría)
-document.getElementById("categoria").addEventListener("change", cargarSubcategorias);
+});
