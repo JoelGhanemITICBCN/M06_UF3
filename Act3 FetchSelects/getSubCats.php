@@ -1,36 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+header('Content-Type: application/json');
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+$servername = "localhost";
+$dbname = "fetchselects";
+$username = "root";
+$password = "";
 
-<body>
+try {
+    $conexion = new mysqli($servername, $username, $password, $dbname);
 
-    <?php
-    $servername = "localhost";
-    $dbname = "fetchselects";
-    $username = "root";
-    $password = "";
-    $conexion = mysqli_connect($servername, $username, $password, $dbname);
-    if (mysqli_ping($conexion)) {
-        $categoriaBD = $_POST["categories"];
-        $select = "select * from subcategorias where id_categoria = $categoriaBD";
-        $consulta = mysqli_query($conexion, $select);
-        $object = new stdClass();
-        $resultado = array();
-        while ($categoria = $consulta->fetch_assoc()) {
-            $object = new stdClass();
-            $object->id = $categoria["id"];
-            $object->nom = $categoria["nom"];
-            array_push($resultado, $object);
-        }
-        echo json_encode($resultado);
-        mysqli_close($conexion);
+    if ($conexion->connect_error) {
+        echo json_encode(array('error' => 'Ha fallado la conexión: ' . $conexion->connect_error));
+        exit();
     }
-    ?>
-</body>
 
-</html>
+    $categoriaBD = isset($_POST["cat"]) ? $_POST["cat"] : '';
+
+    $select = "SELECT * FROM subcategorias WHERE id_categoria = ?";
+    $stmt = $conexion->prepare($select);
+
+    if (!$stmt) {
+        echo json_encode(array('error' => 'Error en la preparación de la consulta: ' . $conexion->error));
+        exit();
+    }
+
+    $stmt->bind_param('i', $categoriaBD);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt->close();
+
+    $resultado = array();
+
+    while ($subcategoria = $result->fetch_assoc()) {
+        $object = new stdClass();
+        $object->id = $subcategoria["id"];
+        $object->nombre = $subcategoria["nombre"];
+        $resultado[] = $object;
+    }
+
+    echo json_encode($resultado);
+    $conexion->close();
+} catch (Exception $e) {
+    echo json_encode(array('error' => 'Error en la ejecución: ' . $e->getMessage()));
+}
+?>
