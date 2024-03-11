@@ -41,14 +41,15 @@ key=AIzaSyD1LqPNfReHlA4RTAU1YOuVKZxTqvCPa0g&callback=initMap" async defer></scri
 <body>
     <div id="map"></div>
     <input type="text" name="adreca" value="Carrer de la Selva de Mar 211 08020 Barcelona" id="adreca" />
-    <button type="button" class="btn btn-secondary" id="findLoc">Buscar adreça</button>
+    <button type="button" onclick="initMap()" class="btn btn-secondary" id="findLoc">Buscar adreça</button>
+    <button type="button" onclick="encuentrate()" class="btn btn-secondary" id="findLoc">Trobat</button>
     <br>
     <input type="text" name="lat" value="" id="latitude" placeholder="lat" hidden/>
     <input type="text" name="lng" value="" id="longitude" placeholder="lng" hidden/>
 </body>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwEQr8flR0CtMZ-jSs9hK8lscYUMOtVPk&callback=initMap" async
-    defer></script>
+    async></script>
 <script src="script.js"></script>
 
 </html>
