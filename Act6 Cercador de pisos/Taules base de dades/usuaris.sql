@@ -1,0 +1,9 @@
+CREATE TABLE usuaris (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(128) NOT NULL,
+    cognoms VARCHAR(128) NOT NULL,
+    dni VARCHAR(9) NOT NULL,
+    username VARCHAR(128) NOT NULL,
+    email VARCHAR(128) NOT NULL,
+    telefon int(9) NOT NULL
+)
